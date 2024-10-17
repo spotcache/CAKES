@@ -4,7 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 import os
-import boto3 # type: ignore
+import boto3  # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -14,6 +14,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# AWS S3 configuration
 s3_client = boto3.client('s3', 
     aws_access_key_id='YOUR_AWS_ACCESS_KEY',
     aws_secret_access_key='YOUR_AWS_SECRET_KEY'
@@ -72,10 +73,17 @@ def upload_file():
     if request.method == 'POST':
         file = request.files['file']
         timer_duration = request.form['duration']
+
+        if not file:
+            flash('No file selected.')
+            return redirect(url_for('upload_file'))
+
+        # Encrypt the file
         key = Fernet.generate_key()
         cipher_suite = Fernet(key)
         encrypted_file = cipher_suite.encrypt(file.read())
 
+        # Store metadata in the database
         new_file = FileUpload(
             filename=file.filename,
             user_id=current_user.id,
@@ -85,14 +93,15 @@ def upload_file():
         db.session.add(new_file)
         db.session.commit()
 
-        # Save encrypted file to AWS S3
+        # Upload the encrypted file to AWS S3
         s3_client.put_object(
             Bucket='YOUR_BUCKET_NAME',
             Key=f'uploads/{new_file.id}.enc',
             Body=encrypted_file
         )
 
-        return redirect('/success')
+        flash('File uploaded successfully!')
+        return redirect(url_for('upload_file'))
 
     return render_template('upload.html')
 
@@ -103,7 +112,7 @@ def check_in(user_id):
             auto_upload(upload)
 
 def auto_upload(file_upload):
-    # Logic for auto-uploading the file
+    # Logic for auto-uploading the file if needed
     pass
 
 if __name__ == '__main__':
