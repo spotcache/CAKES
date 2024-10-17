@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Upload File</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload a Super Classified File</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <input type="number" name="duration" placeholder="Timer Duration (hours)" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</body>
+</html>
