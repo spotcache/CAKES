@@ -64,6 +64,7 @@ If a user fails to check in before the specified duration, the system will autom
 Security Considerations
 All uploaded files are encrypted before being stored in S3.
 Ensure that you manage your AWS credentials securely and avoid hardcoding sensitive information in the source code.
+
 Contributing
 If you'd like to contribute to CAKES, please fork the repository and submit a pull request with your changes.
 
