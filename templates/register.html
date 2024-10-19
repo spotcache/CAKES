@@ -9,12 +9,27 @@
 <body>
     <div class="container">
         <h1>Register</h1>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
+        <form id="registerForm" method="POST">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
             <button type="submit">Register</button>
         </form>
-        <p>Already have an account? <a href="">Login here</a></p>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
     </div>
+
+    <script>
+        // Basic client-side validation for registration
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert('Passwords do not match.');
+            }
+        });
+    </script>
 </body>
 </html>

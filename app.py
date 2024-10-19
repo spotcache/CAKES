@@ -120,17 +120,17 @@ def auto_upload(file_upload):
         )
         encrypted_file_data = response['Body'].read()
 
-        # Here you could upload to another service or change its permissions
+        # We could upload to another service or change its permissions
         # For demonstration, we'll change the S3 file's ACL to public-read
         s3_client.put_object_acl(
-            Bucket='YOUR_BUCKET_NAME',
+            Bucket='bucket name',
             Key=f'uploads/{file_upload.id}.enc',
             ACL='public-read'  # Make it publicly accessible
         )
 
         # Log or notify that the file has been auto-uploaded
         print(f"File {file_upload.filename} auto-uploaded and made public.")
-        # Optionally, send an email notification to the user (not implemented here)
+        # Optionally, sending an email notification to the user (not implemented here)
 
     except Exception as e:
         print(f"Error during auto-upload: {e}")
