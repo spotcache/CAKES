@@ -1,4 +1,4 @@
-# CAKES: Cicada Anonymous Key Escrow System
+## CAKES: Cicada Anonymous Key Escrow System
 
 CAKES is a secure system designed for privacy/security minded users who need to anonymously upload/access sensitive files to the internet. The system allows users to set a timer, and if they fail to check in, the file is automatically uploaded to a public platform.
 
@@ -58,21 +58,21 @@ Log in: After registration, log in with your credentials.
 
 Upload files: Go to the upload section to upload sensitive files, set a timer, and monitor your uploads.
 
-Auto-upload Logic
+Auto-upload Logic:
 If a user fails to check in before the specified duration, the system will automatically make the file public by changing its permissions in AWS S3. This feature is crucial for ensuring that critical information is shared when needed.
 
-Security Considerations
+Security Considerations:
 All uploaded files are encrypted before being stored in S3.
 Ensure that you manage your AWS credentials securely and avoid hardcoding sensitive information in the source code.
 
-Contributing
+Contributing:
 If you'd like to contribute to CAKES, please fork the repository and submit a pull request with your changes.
 
-License
+License:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-Contact
+Contact:
 For any questions or inquiries, please contact:
 
-spotcache
+spotcache -
 spotcache@gmail.com
