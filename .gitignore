@@ -1,0 +1,22 @@
+# Java-related
+*.class
+*.war
+*.jar
+*.log
+
+# Maven-related
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+.mvn/
+.settings/
+node_modules/
+
+# IDE-specific
+.idea/
+*.iml
+.vscode/
+
+# OS-specific
+.DS_Store
+Thumbs.db
