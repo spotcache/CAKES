@@ -1,11 +1,10 @@
-package com.example.cakes.model;
-
-import lombok.Data;
-import javax.persistence.*;
+package main.java.com.CAKES.cakes.model;
 
 @Data
 @Entity
 public class User {
+
+    private static final String GenerationType = null;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +13,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = false)
     private String password;
 }
