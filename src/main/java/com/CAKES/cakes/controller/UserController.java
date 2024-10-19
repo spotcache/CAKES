@@ -4,7 +4,6 @@ import com.example.cakes.model.User;
 import com.example.cakes.model.FileUpload;
 import com.example.cakes.service.FileUploadService;
 import com.example.cakes.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,20 +15,21 @@ import java.security.Principal;
 @Controller
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final FileUploadService fileUploadService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
-    private FileUploadService fileUploadService;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public UserController(UserService userService, FileUploadService fileUploadService, BCryptPasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.fileUploadService = fileUploadService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // ** Registration Page **
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
-        return "register"; // The HTML template in 'templates/register.html'
+        return "register";
     }
 
     @PostMapping("/register")
@@ -38,7 +38,6 @@ public class UserController {
             model.addAttribute("error", "Username already taken");
             return "register";
         }
-
         // Encrypt password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.saveUser(user);
@@ -48,14 +47,14 @@ public class UserController {
     // ** Login Page **
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login"; // The HTML template in 'templates/login.html'
+        return "login";
     }
 
     // ** Upload File Page (Accessible only after login) **
     @GetMapping("/upload")
     public String showUploadForm(Model model) {
         model.addAttribute("fileUpload", new FileUpload());
-        return "upload"; // The HTML template in 'templates/upload.html'
+        return "upload";
     }
 
     @PostMapping("/upload")
@@ -68,11 +67,8 @@ public class UserController {
             return "upload";
         }
 
-        // Find the user by username (from logged-in session)
-        User user = userService.findByUsername(principal.getName());
-
         // Upload the file and store metadata in the database
-        fileUploadService.uploadFile(file, duration, user);
+        fileUploadService.uploadFile(file, duration, userService.findByUsername(principal.getName()));
         model.addAttribute("message", "File uploaded successfully!");
         return "upload";
     }
