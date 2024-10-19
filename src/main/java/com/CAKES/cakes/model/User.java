@@ -1,9 +1,12 @@
 package com.example.cakes.model;
 
+import lombok.Data;
 import javax.persistence.*;
 
+@Data
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,7 +16,4 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    // Getters and Setters
-    // ...
 }
