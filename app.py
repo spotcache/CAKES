@@ -29,9 +29,9 @@ s3_client = boto3.client('s3',
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Rest of your routes (register, login, upload_file, etc.) go here
+# Rest of the routes (register, login, upload_file, etc.)
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create the tables before running the app
+        db.create_all()  # Creating the tables before running the app
     app.run(debug=True)
