@@ -14,13 +14,16 @@ def register():
         password = request.form['password']
         hashed_password = generate_password_hash(password)
 
+        # Create a new user and add to the database
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+
         flash('Registration successful! Please log in.')
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
 
 # Login Route
 @app.route('/login', methods=['GET', 'POST'])
@@ -37,6 +40,7 @@ def login():
             flash('Login failed. Check your credentials.')
 
     return render_template('login.html')
+
 
 # Upload File Route
 @app.route('/upload', methods=['GET', 'POST'])
@@ -75,12 +79,14 @@ def upload_file():
 
     return render_template('upload.html')
 
+
 # Check-in Logic for auto-upload
 def check_in(user_id):
     file_uploads = FileUpload.query.filter_by(user_id=user_id).all()
     for upload in file_uploads:
         if upload.last_checkin < datetime.utcnow() - timedelta(hours=upload.timer_duration):
             auto_upload(upload)
+
 
 # Auto-upload action (local version)
 def auto_upload(file_upload):
@@ -90,6 +96,5 @@ def auto_upload(file_upload):
     if os.path.exists(file_path):
         # Handle the auto-upload (local logic, could move the file, etc.)
         print(f"File {file_upload.filename} has been automatically processed.")
-
     else:
         print(f"Error: {file_upload.filename} not found.")
