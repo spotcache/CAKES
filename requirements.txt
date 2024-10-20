@@ -2,4 +2,4 @@ Flask
 Flask-SQLAlchemy
 Flask-Login
 cryptography
-boto3  # For AWS S3 storage
+Werkzeug
