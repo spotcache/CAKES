@@ -1,12 +1,12 @@
 from flask import request, redirect, render_template, flash, url_for
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 from app import app, db, s3_client
 from models import User, FileUpload
 
-@login_manager.user_loader
+@LoginManager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
