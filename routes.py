@@ -1,15 +1,12 @@
-from flask import request, redirect, render_template, flash, url_for
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from flask import app, request, redirect, render_template, flash, url_for
+from flask_login import login_user, logout_user, login_required, current_user
 from cryptography.fernet import Fernet
-from app import app, db, s3_client
-from models import User, FileUpload
+from datetime import datetime, timedelta
+import os
+from models import db, User, FileUpload
+from werkzeug.security import generate_password_hash, check_password_hash
 
-@LoginManager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
+# Register Route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -25,6 +22,7 @@ def register():
 
     return render_template('register.html')
 
+# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -40,6 +38,7 @@ def login():
 
     return render_template('login.html')
 
+# Upload File Route
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_file():
@@ -56,6 +55,11 @@ def upload_file():
         cipher_suite = Fernet(key)
         encrypted_file = cipher_suite.encrypt(file.read())
 
+        # Save the encrypted file locally
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'{file.filename}.enc')
+        with open(file_path, 'wb') as encrypted_file_obj:
+            encrypted_file_obj.write(encrypted_file)
+
         # Store metadata in the database
         new_file = FileUpload(
             filename=file.filename,
@@ -66,44 +70,26 @@ def upload_file():
         db.session.add(new_file)
         db.session.commit()
 
-        # Upload the encrypted file to AWS S3
-        s3_client.put_object(
-            Bucket='YOUR_BUCKET_NAME',
-            Key=f'uploads/{new_file.id}.enc',
-            Body=encrypted_file
-        )
-
-        flash('File uploaded successfully!')
+        flash('File uploaded and encrypted successfully!')
         return redirect(url_for('upload_file'))
 
     return render_template('upload.html')
 
+# Check-in Logic for auto-upload
 def check_in(user_id):
     file_uploads = FileUpload.query.filter_by(user_id=user_id).all()
     for upload in file_uploads:
         if upload.last_checkin < datetime.utcnow() - timedelta(hours=upload.timer_duration):
             auto_upload(upload)
 
+# Auto-upload action (local version)
 def auto_upload(file_upload):
-    # Retrieve the encrypted file from AWS S3
-    try:
-        response = s3_client.get_object(
-            Bucket='YOUR_BUCKET_NAME',
-            Key=f'uploads/{file_upload.id}.enc'
-        )
-        encrypted_file_data = response['Body'].read()
+    # Path to the encrypted file
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'{file_upload.filename}.enc')
 
-        # We could upload to another service or change its permissions
-        # For demonstration, we'll change the S3 file's ACL to public-read
-        s3_client.put_object_acl(
-            Bucket='YOUR_BUCKET_NAME',
-            Key=f'uploads/{file_upload.id}.enc',
-            ACL='public-read'  # Make it publicly accessible
-        )
+    if os.path.exists(file_path):
+        # Handle the auto-upload (local logic, could move the file, etc.)
+        print(f"File {file_upload.filename} has been automatically processed.")
 
-        # Log or notify that the file has been auto-uploaded
-        print(f"File {file_upload.filename} auto-uploaded and made public.")
-        # Optionally, sending an email notification to the user (not implemented here)
-
-    except Exception as e:
-        print(f"Error during auto-upload: {e}")
+    else:
+        print(f"Error: {file_upload.filename} not found.")
