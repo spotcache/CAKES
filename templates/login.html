@@ -18,14 +18,15 @@
     </div>
 
     <script>
-        // Basic client-side validation for login
+        // Basic client-side validation for login form
+        // Ensures that both username and password fields are filled out before submission stupid
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (username === '' || password === '') {
-                event.preventDefault();
-                alert('Please fill out all fields.');
+            if (username.trim() === '' || password.trim() === '') {
+                event.preventDefault(); // Prevent form submission
+                alert('Please fill out all fields.'); // Show an alert to the user
             }
         });
     </script>
