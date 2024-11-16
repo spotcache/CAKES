@@ -3,8 +3,8 @@ from flask_login import LoginManager
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cakes.db'
-app.config['SECRET_KEY'] = os.urandom(24)
+app.config['database uri here'] = 'sqlite:///cakes.db'
+app.config['your secret key here'] = os.urandom(24)
 
 # Initialize the database
 from models import db, User, FileUpload
