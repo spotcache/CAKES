@@ -10,12 +10,14 @@
     <div class="container">
         <h1>Upload a Super Classified File</h1>
         <form id="uploadForm" method="POST" enctype="multipart/form-data">
-            <input type="file" id="fileInput" name="file" required>
+            <input type="file" id="fileInput" name="file" accept=".txt,image/*" required>
             <input type="number" id="durationInput" name="duration" placeholder="Timer Duration (hours)" min="1" required>
+            <div id="previewContainer" style="display: none; margin-top: 20px;">
+                <h3>File Preview</h3>
+                <div id="previewContent"></div>
+            </div>
             <button type="submit">Upload</button>
         </form>
-
-        <!-- Progress Container (hidden initially) -->
         <div id="progressContainer" style="display: none;">
             <p>Uploading... <span id="progressPercent">0%</span></p>
             <progress id="uploadProgress" value="0" max="100"></progress>
@@ -23,13 +25,51 @@
     </div>
 
     <script>
+        // Preview File Content
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('previewContainer');
+            const previewContent = document.getElementById('previewContent');
+
+            if (file) {
+                // Reset preview content
+                previewContent.innerHTML = '';
+                previewContainer.style.display = 'block';
+
+                if (file.type.startsWith('image/')) {
+                    // Image preview
+                    const img = document.createElement('img');
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '200px';
+                    img.src = URL.createObjectURL(file);
+                    previewContent.appendChild(img);
+                } else if (file.type === 'text/plain') {
+                    // Text file preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const textPreview = document.createElement('pre');
+                        textPreview.textContent = e.target.result;
+                        textPreview.style.maxHeight = '200px';
+                        textPreview.style.overflow = 'auto';
+                        previewContent.appendChild(textPreview);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    // Unsupported file type
+                    previewContent.innerHTML = '<p>Preview not available for this file type.</p>';
+                }
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+
+        // Handle form submission with progress
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent normal form submission behavior
+            event.preventDefault();  // Prevent normal form submission
 
             const file = document.getElementById('fileInput').files[0];
             const duration = document.getElementById('durationInput').value;
 
-            // Validate inputs
             if (!file || duration <= 0) {
                 alert('Please select a valid file and timer duration.');
                 return;
@@ -42,10 +82,10 @@
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '{{ url_for("upload_file") }}', true);
 
-            // Show the progress container
+            // Display the progress container
             document.getElementById('progressContainer').style.display = 'block';
 
-            // Update progress bar during upload
+            // Update progress bar
             xhr.upload.onprogress = function(event) {
                 if (event.lengthComputable) {
                     const percent = (event.loaded / event.total) * 100;
@@ -54,19 +94,18 @@
                 }
             };
 
-            // Handle response after file upload
+            // Handle the response
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     alert('File uploaded successfully!');
                     document.getElementById('uploadProgress').value = 100;
                     document.getElementById('progressPercent').innerText = '100%';
                 } else {
-                    alert('Error uploading file. Please try again.');
+                    alert('Error uploading file.');
                 }
             };
 
-            // Send the form data via AJAX
-            xhr.send(formData);
+            xhr.send(formData);  // Send form data
         });
     </script>
 </body>
