@@ -19,16 +19,21 @@
     </div>
 
     <script>
-        // Basic client-side validation for registration
+        // Basic client-side validation for the registration form
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
+            // Check if passwords match
             if (password !== confirmPassword) {
-                event.preventDefault();
-                alert('Passwords do not match.');
+                event.preventDefault(); // Prevent form submission
+                alert('Passwords do not match.'); // Show an alert to the user
+                return;
             }
+
+            // Optional: Maybe add further client-side validation logic here
+            // Andd: Check if the username meets specific criteria
         });
     </script>
 </body>
