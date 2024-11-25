@@ -59,7 +59,7 @@ Log in: After registration, log in with your credentials.
 Upload files: Go to the upload section to upload sensitive files, set a timer, and monitor your uploads.
 
 Auto-upload Logic:
-If a user fails to check in before the specified duration, the system will automatically make the file public by changing its permissions in AWS S3. This feature is crucial for ensuring that critical information is shared when needed.
+If a user fails to check in or specify other instructions before the specified duration, the system will automatically make the file public by changing its permissions in AWS S3. This feature is crucial for ensuring that critical information is shared when needed.
 
 Security Considerations:
 All uploaded files are encrypted before being stored in S3.
